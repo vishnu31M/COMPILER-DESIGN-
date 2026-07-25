@@ -1,0 +1,154 @@
+Q2. Lexical Error Analysis
+
+Original Program Line Numbers:
+1  #include <stdio.h>
+2
+3  int main() {
+4      int 1num = 100;
+5      float rate@ = 25.5;
+6      char ch = 'abc';
+7      int total = 50$20;
+8      int num#1 = 30;
+9      int %count = 40;
+10
+11     printf("Welcome to Compiler Design);
+12
+13     int x = 09;
+14     int y = 0xZ12;
+15     int z = 12.3.4;
+16
+17     char str1[] = "Hello;
+18     char str2[] = "World";
+19
+20     int _valid = 10;
+21     int invalid-id = 20;
+22
+23     float value = 5..6;
+24     int data = 10@5;
+25
+26     char c = 'xy';
+27     int 3value = 60;
+28
+29     printf("Value: %d\n", total);
+30
+31     return 0;
+32 }
+
+(a) Error Identification
+
+i) All lexical errors in the program:
+   1. Line 4: "1num"
+   2. Line 5: "rate@"
+   3. Line 6: "'abc'"
+   4. Line 7: "50$20"
+   5. Line 8: "num#1"
+   6. Line 9: "%count"
+   7. Line 11: Unterminated string literal "Welcome to Compiler Design)
+   8. Line 13: "09"
+   9. Line 14: "0xZ12"
+  10. Line 15: "12.3.4"
+  11. Line 17: Unterminated string literal "Hello;
+  12. Line 21: "invalid-id"
+  13. Line 23: "5..6"
+  14. Line 24: "10@5"
+  15. Line 26: "'xy'"
+  16. Line 27: "3value"
+
+ii) Invalid token list with line numbers:
+   - Line 4: 1num
+   - Line 5: rate@
+   - Line 6: 'abc'
+   - Line 7: 50$20
+   - Line 8: num#1
+   - Line 9: %count
+   - Line 11: "Welcome to Compiler Design) [missing closing quote]
+   - Line 13: 09
+   - Line 14: 0xZ12
+   - Line 15: 12.3.4
+   - Line 17: "Hello; [missing closing quote]
+   - Line 21: invalid-id
+   - Line 23: 5..6
+   - Line 24: 10@5
+   - Line 26: 'xy'
+   - Line 27: 3value
+
+(b) Error Classification
+
+i) Why each is a lexical error:
+   - Line 4: "1num" begins with a digit, so it is not a valid identifier token.
+   - Line 5: "rate@" contains '@', which is not allowed in C identifiers.
+   - Line 6: 'abc' is not a valid character literal; char literals may contain a single character or valid escape.
+   - Line 7: "50$20" contains '$', which is not part of valid numeric token syntax.
+   - Line 8: "num#1" contains '#', invalid in identifier names.
+   - Line 9: "%count" contains '%', invalid at the start of an identifier.
+   - Line 11: Unterminated string literal; lexical scanner cannot complete a string token.
+   - Line 13: "09" is invalid because C octal integer literals cannot include digit 9.
+   - Line 14: "0xZ12" is invalid because hex literals can only contain 0-9 and A-F.
+   - Line 15: "12.3.4" is malformed numeric constant; a valid real constant can only have one decimal point.
+   - Line 17: Unterminated string literal; missing closing quote.
+   - Line 21: "invalid-id" contains '-', which is not permitted in identifiers.
+   - Line 23: "5..6" contains two consecutive decimal points, invalid numeric syntax.
+   - Line 24: "10@5" contains '@', not valid in numeric tokens.
+   - Line 26: 'xy' is invalid as a character constant because it contains more than one character.
+   - Line 27: "3value" starts with a digit, violating identifier formation.
+
+ii) Rule violated for each error:
+   - Identifier rules:
+     * 1num, rate@, num#1, %count, invalid-id, 3value
+   - Constant formation:
+     * 09, 0xZ12, 12.3.4, 5..6, 10@5
+   - String/character literal rules:
+     * 'abc', "Welcome to Compiler Design), "Hello;, 'xy'
+   - Operator/symbol rules:
+     * 50$20 [invalid symbol '$' inside numeric token]
+
+(c) Token Correction
+
+i) Rewrite each invalid token into a valid token:
+   - 1num → num1
+   - rate@ → rate
+   - 'abc' → 'a'
+   - 50$20 → 50 + 20
+   - num#1 → num1
+   - %count → count
+   - "Welcome to Compiler Design) → "Welcome to Compiler Design"
+   - 09 → 9
+   - 0xZ12 → 0x12
+   - 12.3.4 → 12.34 or 12.3
+   - "Hello; → "Hello"
+   - invalid-id → invalid_id
+   - 5..6 → 5.6
+   - 10@5 → 105 or 10 + 5
+   - 'xy' → 'x'
+   - 3value → value3
+
+(d) Compiler Behavior Analysis
+
+i) How a lexical analyzer processes such errors:
+   - The lexer reads source text and groups characters into tokens.
+   - When it encounters an invalid character or malformed token, it cannot form a legal token and reports a lexical error.
+   - For example, on "rate@" the scanner accepts "rate" as an identifier then sees '@' and emits an invalid-token error.
+   - On unterminated strings, the lexer scans until end-of-line or file and then reports the unterminated literal.
+
+ii) Compiler behavior on lexical errors:
+   - Most compilers stop the compilation process after reporting lexical errors in the source line.
+   - Many compilers also attempt limited error recovery by skipping the invalid token and continuing to scan the rest of the line or file.
+   - This means the compiler may continue scanning to report additional errors, but it cannot guarantee correct parsing if tokens are malformed.
+
+(e) Advanced Thinking
+
+i) Simple rule / DFA idea for invalid identifiers starting with digits:
+   - Rule: A valid identifier must start with an alphabetic character or underscore, followed by letters, digits, or underscores.
+   - DFA concept:
+       * State S0: start
+       * If input is letter or '_' → go to state ID
+       * If input is digit → go to state ERROR
+       * In state ID: accept letters, digits, '_' and stay in ID
+       * On any invalid symbol → go to state ERROR
+       * At end of token: accept only if in ID state
+
+ii) Improving error messages for beginners:
+   - Show the invalid token, its exact location, and the expected form.
+   - Example: "Invalid identifier '1num' at line 4: identifiers must start with a letter or underscore."
+   - Provide a suggested correction when possible, such as "Try 'num1' instead of '1num'."
+   - Distinguish between different lexical issues clearly, e.g. "unterminated string literal" vs "invalid numeric literal".

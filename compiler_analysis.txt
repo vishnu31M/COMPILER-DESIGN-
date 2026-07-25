@@ -1,0 +1,132 @@
+Q1. Error Identification and Classification
+
+Original Program Line Numbers:
+1  #include <stdio.h>
+2
+3  int sumArray(int arr[], int n) {
+4      int i, sum = 0;
+5      for(i = 0; i <= n; i++) {
+6          sum = sum + arr[i];
+7      }
+8      return sum;
+9  }
+10
+11 int main() {
+12     int arr[5] = {1,2,3,4,5}
+13     int total;
+14
+15     total = sumArray(arr);
+16
+17     if(total == 15) {
+18         printf("Correct Sum\n")
+19     }
+20
+21     int a = 10, b = 0;
+22     int c = a / b;
+23
+24     int *p;
+25     *p = 20;
+26
+27     return 0;
+28 }
+
+(a) Error Identification
+
+1. Line 12: Missing semicolon after array initialization.
+   - Nature: Syntax error. The C parser expects a semicolon to terminate the declaration.
+   - Phase: Syntax.
+
+2. Line 15: Incorrect function call with missing second argument.
+   - Nature: Semantic error. The function prototype requires two parameters, but the call passes only one.
+   - Phase: Semantic.
+
+3. Line 18: Missing semicolon after printf statement.
+   - Nature: Syntax error. Statements in C must end with a semicolon.
+   - Phase: Syntax.
+
+4. Line 5: Loop boundary uses "<= n" instead of "< n".
+   - Nature: Logical error / runtime error. This causes out-of-bounds array access for arr[n].
+   - Phase: Logical (with runtime impact).
+
+5. Line 22: Division by zero when b == 0.
+   - Nature: Runtime error. Integer division by zero is undefined behavior and typically crashes or raises a runtime fault.
+   - Phase: Runtime.
+
+6. Line 24-25: Dereferencing uninitialized pointer p.
+   - Nature: Runtime error / undefined behavior. The pointer does not point to valid memory before being written.
+   - Phase: Runtime.
+
+(b) Classification of Errors
+
+Lexical Errors:
+- None in this program. All tokens are valid C tokens.
+
+Syntax Errors:
+- Line 12: Missing semicolon after array declaration.
+- Line 18: Missing semicolon after printf.
+
+Semantic Errors:
+- Line 15: Function call argument count mismatch.
+
+Logical Errors:
+- Line 5: Incorrect loop condition leads to out-of-bounds access.
+
+Runtime Errors:
+- Line 22: Division by zero.
+- Line 24-25: Dereferencing an uninitialized pointer.
+
+(c) Compilation Behavior
+
+1. Compilation-detected errors:
+- Syntax errors at lines 12 and 18 are detected during parsing.
+- The semantic error at line 15 is detected during type checking/semantic analysis because the call does not match the function signature.
+
+2. Execution-only errors:
+- The logical error at line 5 may compile but cause a runtime fault when arr[5] is accessed.
+- Division by zero at line 22 is only detected at runtime.
+- Dereferencing uninitialized pointer p at lines 24-25 is undefined behavior and may only fail at runtime.
+
+3. Early-stage errors preventing later-stage detection:
+- If the compiler stops at syntax errors, it will not perform later semantic analysis or code generation. For example, the missing semicolon at line 12 prevents successful parsing, so the compiler might never reach the analysis that would detect the bad function call or the out-of-bounds loop.
+- This means early lexical/syntax errors can hide later semantic or runtime problems until the earlier errors are fixed.
+
+(d) Corrected Program
+
+The corrected program is provided in the file `corrected_program.c`.
+It removes all compilation and runtime errors, uses proper syntax and semantics, and preserves function calls, array access, looping, arithmetic, and pointer usage safely.
+
+(e) Impact Analysis
+
+1. Missing semicolon or malformed statements:
+   - Impact: Prevents compilation entirely. The compiler cannot build an abstract syntax tree, so the program cannot run.
+
+2. Improper pointer usage (`*p = 20` with uninitialized `p`):
+   - Impact: Undefined behavior. The program may crash, overwrite random memory, or appear to work incorrectly. This is dangerous because it can corrupt program state and lead to unpredictable failures.
+
+3. Division by zero (`int c = a / b` when `b == 0`):
+   - Impact: Runtime crash or undefined behavior. Most systems raise a hardware exception or abort the program, causing loss of control and an abrupt stop.
+
+4. Out-of-bounds array access in the loop:
+   - Impact: Reads memory outside the array bounds, which can return garbage values or crash the program. It may also corrupt neighboring data.
+
+(f) Advanced Compiler Perspective
+
+1. Better error messages:
+- Provide precise location, code snippet, and suggested fix for each error.
+- Use more descriptive diagnostics, e.g. "expected ';' after declaration" or "too few arguments to function 'sumArray'".
+
+2. Early detection of runtime errors:
+- Incorporate optional static analysis checks for common errors like division by zero, null/uninitialized pointer use, and array bounds violations.
+- Add compiler warnings for suspicious constructs, such as dereferencing a pointer that has not been initialized.
+
+3. Compiler enhancements for efficient debugging:
+- Enhancement 1: Integrate a dedicated static analysis pass that reports potential runtime issues with severity levels, allowing developers to catch errors before execution.
+- Enhancement 2: Improve the compiler's mid-level intermediate representation diagnostics so it can map runtime checks back to source code with exact line numbers and variable values.
+
+4. Additional enhancements:
+- Add optional runtime sanitizers (address sanitizer, integer sanitizer) that detect memory corruption and undefined behavior during testing.
+- Include symbolic debugging support and clearer warnings when function signatures do not match call sites.
+
+File summary:
+- `corrected_program.c`: corrected C program.
+- `compiler_analysis.txt`: theory answers and classification details.

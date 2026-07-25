@@ -1,0 +1,146 @@
+Q3. Compiler Phase Error Analysis
+
+Original Program Line Numbers:
+1  #include <stdio.h>
+2
+3  int divide(int a, int b) {
+4      return a / b
+5  }
+6
+7  int main() {
+8      int #value = 20;
+9      float num = 15.5
+10     int result;
+11
+12     result = divide(10);
+13
+14     if(result = 5) {
+15         printf("Result is 5\n")
+16     }
+17
+18     int x = 10;
+19     int y = 0;
+20     int z = x / y;
+21
+22     int arr[4] = {1,2,3,4};
+23     printf("%d\n", arr[4]);
+24
+25     int *ptr;
+26     *ptr = 25;
+27
+28     int total;
+29     total = x + y * result + 0;
+30
+31     while(x < 20) {
+32         printf("%d\n", x);
+33     }
+34
+35     return 0;
+36 }
+
+(a) Identify Errors
+
+I. All errors:
+   - Line 4: missing semicolon after return statement.
+   - Line 8: invalid identifier "#value".
+   - Line 9: missing semicolon after float initialization.
+   - Line 12: function call mismatch, divide requires 2 arguments.
+   - Line 14: assignment used instead of comparison in if.
+   - Line 15: missing semicolon after printf.
+   - Line 20: division by zero when y == 0.
+   - Line 23: array index out of bounds (arr[4] on size 4 array).
+   - Line 26: dereferencing uninitialized pointer ptr.
+   - Line 29: expression contains redundant "+ 0".
+   - Line 31-33: while loop with no update to x, causing infinite loop.
+
+II. Line number and error description:
+   - Line 4: Syntax error; missing semicolon at end of statement.
+   - Line 8: Lexical error; invalid symbol '#' in identifier.
+   - Line 9: Syntax error; missing semicolon after variable declaration.
+   - Line 12: Semantic error; wrong number of arguments for function call.
+   - Line 14: Semantic error; uses assignment instead of equality comparison.
+   - Line 15: Syntax error; missing semicolon after printf call.
+   - Line 20: Runtime error; division by zero.
+   - Line 23: Runtime error; array out-of-bounds access.
+   - Line 26: Runtime error; dereference of uninitialized pointer.
+   - Line 29: Optimization issue; redundant addition of zero.
+   - Line 31: Runtime/logic issue; missing loop update leading to infinite loop.
+
+(b) Classify by Compiler Phase
+
+I. Lexical
+   - Line 8: invalid identifier "#value".
+
+II. Syntax
+   - Line 4: missing semicolon after return.
+   - Line 9: missing semicolon after initialization.
+   - Line 15: missing semicolon after printf.
+
+III. Semantic
+   - Line 12: function argument mismatch.
+   - Line 14: assignment in if condition.
+
+IV. Intermediate Code Issues
+   - Line 29: redundant expression "+ 0".
+   - Line 31-33: while loop without update generates infinite loop in intermediate code.
+
+V. Optimization Issues
+   - Line 29: redundant addition of zero.
+   - Line 23: arr[4] is invalid index; compiler optimizers may not catch semantic out-of-bounds in general.
+
+VI. Runtime Errors
+   - Line 20: division by zero.
+   - Line 23: array bounds violation.
+   - Line 26: invalid pointer access.
+   - Line 31-33: infinite loop at runtime.
+
+(c) Compilation vs Execution
+
+I. Compile-time errors:
+   - Line 4, 8, 9, 12, 14, 15 are detected during compilation.
+   - Redundant expression on line 29 may be detected as a warning by optimization passes.
+
+II. Execution-only errors:
+   - Line 20: division by zero occurs only at runtime.
+   - Line 23: array bounds violation manifests at runtime.
+   - Line 26: invalid pointer dereference is undefined behavior at runtime.
+   - Line 31: infinite loop occurs only when running the program.
+
+III. Why some errors prevent further compilation:
+   - Syntax and lexical errors stop parsing and semantic analysis because the compiler cannot construct a correct token stream or parse tree.
+   - For example, missing semicolons and invalid identifiers prevent the compiler from understanding later statements, so later semantic checks are not performed until these are fixed.
+
+(d) Correct the Program
+
+The corrected program is provided in `q3_corrected.c`.
+It fixes all syntax, semantic, and runtime issues and uses safe pointer, array, and loop behavior.
+
+(e) Deep Analysis
+
+I. Incorrect pointer usage at runtime:
+   - Dereferencing an uninitialized pointer uses an invalid memory address.
+   - This can crash the program, corrupt memory, or produce unpredictable results, because the pointer does not point to valid storage.
+
+II. Array bounds violation impacts memory:
+   - Accessing `arr[4]` on a 4-element array reads memory past the allocated array.
+   - This may return garbage, overwrite adjacent variables, or trigger a segmentation fault.
+   - It undermines memory safety and can corrupt program state.
+
+III. Operator precedence and intermediate code:
+   - Expression evaluation must respect operator precedence to generate correct intermediate code.
+   - For example, `x + y * result + 0` should compute `y * result` first, then add `x`, then add zero.
+   - If precedence is mishandled, the generated intermediate code can produce wrong results or inefficient instruction sequences.
+
+(f) Advanced Task
+
+I. Compiler improvements:
+   A. Detect runtime errors earlier:
+      - Add static analysis passes to warn about division by zero, uninitialized pointers, and potential out-of-bounds array accesses.
+      - Integrate optional sanitizers or symbolic execution during compile-time to find unsafe constructs before execution.
+   B. Improve debugging messages:
+      - Provide exact line and column locations, clearly label the error type, and suggest corrective actions.
+      - Use human-friendly descriptions such as "expected '==' instead of '=' in if condition" and "invalid identifier '#' not allowed in name".
+
+II. Optimization phase improvements:
+   - Use constant folding and dead-code elimination to remove redundant expressions such as `+ 0`.
+   - Perform algebraic simplification: rewrite `x + y * result + 0` to `x + y * result` and eliminate unreachable loops or unused variables.
