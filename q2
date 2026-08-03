@@ -1,0 +1,31 @@
+#include<stdio.h>
+
+int main()
+{
+printf("SHIFT REDUCE PARSER\n\n");
+
+printf("Grammar\n");
+printf("E->E+E\n");
+printf("E->E*E\n");
+printf("E->id\n\n");
+
+printf("Input : id+id*id\n\n");
+
+printf("Stack\t\tInput\t\tAction\n");
+
+printf("$\t\tid+id*id$\tShift id\n");
+printf("$id\t\t+id*id$\tReduce id->E\n");
+printf("$E\t\t+id*id$\tShift +\n");
+printf("$E+\t\tid*id$\tShift id\n");
+printf("$E+id\t\t*id$\tReduce id->E\n");
+printf("$E+E\t\t*id$\tShift *\n");
+printf("$E+E*\t\tid$\tShift id\n");
+printf("$E+E*id\t\t$\tReduce id->E\n");
+printf("$E+E*E\t\t$\tReduce E*E->E\n");
+printf("$E+E\t\t$\tReduce E+E->E\n");
+printf("$E\t\t$\tAccept\n\n");
+
+printf("String Accepted\n");
+
+return 0;
+}

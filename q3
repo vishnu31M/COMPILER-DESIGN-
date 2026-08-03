@@ -1,0 +1,50 @@
+#include<stdio.h>
+
+int main()
+{
+
+printf("CLR / SLR / LALR PARSER\n\n");
+
+printf("Grammar\n");
+printf("S->L=R\n");
+printf("S->R\n");
+printf("L->*R\n");
+printf("L->id\n");
+printf("R->L\n\n");
+
+printf("FIRST Sets\n");
+printf("FIRST(L)={*,id}\n");
+printf("FIRST(R)={*,id}\n");
+printf("FIRST(S)={*,id}\n\n");
+
+printf("FOLLOW Sets\n");
+printf("FOLLOW(S)={$}\n");
+printf("FOLLOW(L)={=,$}\n");
+printf("FOLLOW(R)={=,$}\n\n");
+
+printf("CLR has largest number of states.\n");
+printf("SLR has fewer states but may produce conflicts.\n");
+printf("LALR merges CLR states having same LR(0) core.\n");
+printf("LALR table is smaller than CLR and generally conflict free for this grammar.\n\n");
+
+printf("Parsing Input : id=*id\n\n");
+
+printf("Stack\t\tInput\t\tAction\n");
+
+printf("$\t\tid=*id$\tShift id\n");
+printf("$id\t\t=*id$\tReduce L->id\n");
+printf("$L\t\t=*id$\tShift =\n");
+printf("$L=\t\t*id$\tShift *\n");
+printf("$L=*\t\tid$\tShift id\n");
+printf("$L=*id\t\t$\tReduce L->id\n");
+printf("$L=*L\t\t$\tReduce R->L\n");
+printf("$L=*R\t\t$\tReduce L->*R\n");
+printf("$L=L\t\t$\tReduce R->L\n");
+printf("$L=R\t\t$\tReduce S->L=R\n");
+printf("$S\t\t$\tAccept\n\n");
+
+printf("String Accepted\n");
+
+return 0;
+
+}
