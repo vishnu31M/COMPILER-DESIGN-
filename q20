@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define MAX 10
+
+char productions[MAX][MAX];
+char trailing[MAX];
+int n;
+
+void findTRAILING(char c) {
+    if (!isupper(c)) {
+        strncat(trailing, &c, 1);
+        return;
+    }
+
+    for (int i = 0; i < n; i++) {
+        if (productions[i][0] == c) {
+            int len = strlen(productions[i]);
+            if (!isupper(productions[i][len - 1])) {
+                strncat(trailing, &productions[i][len - 1], 1);
+            } else {
+                findTRAILING(productions[i][len - 1]);
+            }
+        }
+    }
+}
+
+int main() {
+    printf("Enter the number of productions: ");
+    scanf("%d", &n);
+
+    printf("Enter the productions:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%s", productions[i]);
+    }
+
+    for (int i = 0; i < n; i++) {
+        trailing[0] = '\0';
+        findTRAILING(productions[i][0]);
+        printf("TRAILING(%c) = { %s }\n", productions[i][0], trailing);
+    }
+
+    return 0;
+}

@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int temp_var_count = 0;
+char temp_var[3];
+
+void new_temp_var() {
+    sprintf(temp_var, "t%d", temp_var_count++);
+}
+
+void generate_TAC(char *input) {
+    char *token;
+    char operands[3][10];
+    int op_count = 0;
+
+    token = strtok(input, " ");
+    while (token != NULL) {
+        if (strcmp(token, "=") != 0 && strcmp(token, "+") != 0 && strcmp(token, "*") != 0) {
+            strcpy(operands[op_count++], token);
+        }
+        token = strtok(NULL, " ");
+    }
+
+    // Generate TAC for multiplication
+    new_temp_var();
+    printf("%s = %s * %s\n", temp_var, operands[2], operands[3]);
+
+    // Generate TAC for addition
+    new_temp_var();
+    printf("%s = %s + %s\n", temp_var, operands[1], temp_var_count == 1 ? operands[3] : temp_var);
+
+    // Generate TAC for assignment
+    printf("%s = %s\n", operands[0], temp_var);
+}
+
+int main() {
+    char input[] = "a = b + c * d"; // Example input statement
+    generate_TAC(input);
+    return 0;
+}

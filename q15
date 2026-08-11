@@ -1,0 +1,106 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char stack[50], lasthandle[10];
+char handles[][5] = { "E+E", "E*E", "E/E", "E^E", "i", "(E)" };
+char *input;
+int top = 0, i = 0, len;
+
+/* precedence table */
+char prec[9][9] = {
+/*input: +    -    *    /    ^    i    (    )    $   */
+/* + */  '>', '>', '<', '<', '<', '<', '<', '>', '>',
+/* - */  '>', '>', '<', '<', '<', '<', '<', '>', '>',
+/* * */  '>', '>', '>', '>', '<', '<', '<', '>', '>',
+/* / */  '>', '>', '>', '>', '<', '<', '<', '>', '>',
+/* ^ */  '>', '>', '>', '>', '>', '<', '<', '>', '>',
+/* i */  '>', '>', '>', '>', '>', 'e', 'e', '>', '>',
+/* ( */  '<', '<', '<', '<', '<', '<', '<', '>', 'e',
+/* ) */  '>', '>', '>', '>', '>', 'e', 'e', '>', '>',
+/* $ */  '<', '<', '<', '<', '<', '<', '<', '<', '>'
+};
+
+int getindex(char c) {
+    switch(c) {
+        case '+': return 0;
+        case '-': return 1;
+        case '*': return 2;
+        case '/': return 3;
+        case '^': return 4;
+        case 'i': return 5;
+        case '(': return 6;
+        case ')': return 7;
+        case '$': return 8;
+        default: return -1;
+    }
+}
+
+void print_state(const char *action) {
+    printf("\n%s\t", stack);
+    for(int k=i;k<len;k++) printf("%c", input[k]);
+    printf("\t%s", action);
+}
+
+void shift() {
+    stack[++top] = input[i++];
+    stack[top+1] = '\0';
+}
+
+int reduce() {
+    int h;
+
+    for (h=0; h<6; h++) {
+        int L = strlen(handles[h]);
+        if (top+1 < L) continue;
+
+        if (!strncmp(stack + top - L + 1, handles[h], L)) {
+
+            strcpy(lasthandle, handles[h]);
+
+            // replace handle with E
+            top = top - L + 1;
+            stack[top] = 'E';
+            stack[top+1] = '\0';
+
+            if (strcmp(lasthandle, "i") == 0)
+                print_state("Reduced: E->i");
+            else if (strcmp(lasthandle, "(E)") == 0)
+                print_state("Reduced: E->(E)");
+            else
+                print_state("Reduced: E->E?E");  // placeholder
+
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int main() {
+    input = (char*)malloc(50);
+    printf("\nEnter the string\n");
+    scanf("%s", input);
+
+    strcat(input, "$");
+    len = strlen(input);
+
+    strcpy(stack, "$");
+
+    printf("\nSTACK\tINPUT\tACTION");
+
+    while (i < len) {
+        shift();
+        print_state("Shift");
+
+        while (prec[getindex(stack[top])][getindex(input[i])] == '>') {
+            if (!reduce()) break;
+        }
+    }
+
+    if (strcmp(stack, "$E$") == 0)
+        printf("\nAccepted;");
+    else
+        printf("\nNot Accepted;");
+
+    return 0;
+}

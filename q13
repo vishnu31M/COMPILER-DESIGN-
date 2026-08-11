@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main()
+{
+    char string[50];
+    int i = 0;
+    int state = 0; // 0 = reading a's, 1 = reading b's
+
+    printf("The grammar is:\nS → aS | Sb | ab\n");
+    printf("Enter the string to be checked:\n");
+    scanf("%s", string);
+
+    // Must start with 'a'
+    if (string[0] != 'a')
+    {
+        printf("String not accepted\n");
+        return 0;
+    }
+
+    // Scan the string
+    for (i = 0; string[i] != '\0'; i++)
+    {
+        if (state == 0)   // Reading a’s
+        {
+            if (string[i] == 'a')
+                continue;
+            else if (string[i] == 'b')
+                state = 1;   // Switch to reading b’s
+            else
+            {
+                printf("String not accepted\n");
+                return 0;
+            }
+        }
+        else if (state == 1)  // Reading b’s
+        {
+            if (string[i] == 'b')
+                continue;
+            else
+            {
+                printf("String not accepted\n");
+                return 0;   // No 'a' allowed after 'b'
+            }
+        }
+    }
+
+    // Must contain at least one b (to match S → ab)
+    if (state == 0)
+    {
+        printf("String not accepted\n");
+        return 0;
+    }
+
+    printf("String accepted\n");
+    return 0;
+}

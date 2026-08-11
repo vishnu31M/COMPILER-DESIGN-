@@ -1,0 +1,21 @@
+#include <stdio.h>
+int main() {
+    char ch;
+    printf("Enter characters (CTRL + D or CTRL + Z to stop):\n");
+    while ((ch = getchar()) != EOF) {
+        if (ch == '+') {
+            printf("Operator: +\n");
+        }
+        else if (ch == '-') {
+            printf("Operator: -\n");
+        }
+        else if (ch == '*') {
+            printf("Operator: *\n");
+        }
+        else if (ch == '/') {
+            printf("Operator: /\n");
+        }
+    }
+
+    return 0;
+}

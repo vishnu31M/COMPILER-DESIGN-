@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+char stack[50], input[50];
+int st_ptr = 0, ip_ptr = 0;
+int len;
+
+void reduce();
+void print_state(const char *action);
+
+int main() {
+    printf("\n\t\t SHIFT REDUCE PARSER\n");
+    printf("\n GRAMMAR\n");
+    printf("\n E -> E + E\n E -> E * E\n E -> E / E\n E -> a / b\n");
+
+    printf("\nEnter the input symbol: ");
+    scanf("%s", input);
+
+    len = strlen(input);
+
+    printf("\n\t stack implementation table");
+    printf("\n stack\t\t input symbol\t\t action\n");
+
+    print_state("--");
+
+    while (ip_ptr < len) {
+        // SHIFT
+        stack[st_ptr++] = input[ip_ptr];
+        stack[st_ptr] = '\0';
+        char action[20] = "shift ";
+        char t[2] = { input[ip_ptr], '\0' };
+        strcat(action, t);
+
+        input[ip_ptr] = ' ';
+        print_state(action);
+
+        ip_ptr++;
+
+        reduce();
+    }
+
+    reduce();  // final reductions
+
+    return 0;
+}
+
+void print_state(const char *action) {
+    printf("\n $%s\t\t%s$\t\t\t%s", stack, input, action);
+}
+
+void reduce() {
+    int changed = 1;
+
+    while (changed) {
+        changed = 0;
+
+        // Reduce a → E or b → E
+        if (st_ptr >= 1 && (stack[st_ptr - 1] == 'a' || stack[st_ptr - 1] == 'b')) {
+            char prev = stack[st_ptr - 1];
+            stack[st_ptr - 1] = 'E';
+            stack[st_ptr] = '\0';
+
+            if (prev == 'a')
+                print_state("E->a");
+            else
+                print_state("E->b");
+
+            changed = 1;
+        }
+
+        // Reduce E+E → E
+        if (st_ptr >= 3 &&
+            stack[st_ptr - 3] == 'E' &&
+            stack[st_ptr - 2] == '+' &&
+            stack[st_ptr - 1] == 'E') {
+
+            st_ptr -= 2;
+            stack[st_ptr] = 'E';
+            stack[st_ptr + 1] = '\0';
+
+            print_state("E->E+E");
+            changed = 1;
+        }
+
+        // Reduce E*E → E
+        if (st_ptr >= 3 &&
+            stack[st_ptr - 3] == 'E' &&
+            stack[st_ptr - 2] == '*' &&
+            stack[st_ptr - 1] == 'E') {
+
+            st_ptr -= 2;
+            stack[st_ptr] = 'E';
+            stack[st_ptr + 1] = '\0';
+
+            print_state("E->E*E");
+            changed = 1;
+        }
+
+        // Reduce E/E → E
+        if (st_ptr >= 3 &&
+            stack[st_ptr - 3] == 'E' &&
+            stack[st_ptr - 2] == '/' &&
+            stack[st_ptr - 1] == 'E') {
+
+            st_ptr -= 2;
+            stack[st_ptr] = 'E';
+            stack[st_ptr + 1] = '\0';
+
+            print_state("E->E/E");
+            changed = 1;
+        }
+
+        // Accept condition: only E remains and input is consumed
+        if (strcmp(stack, "E") == 0 && ip_ptr == len) {
+            print_state("ACCEPT");
+            exit(0);
+        }
+    }
+}

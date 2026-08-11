@@ -1,0 +1,34 @@
+#include <stdio.h>
+int main() {
+    char ch, next;
+    printf("Enter C code (Press CTRL + D or CTRL + Z to stop input):\n");
+    while ((ch = getchar()) != EOF) {
+        if (ch == '/') {  
+            next = getchar();
+            if (next == '/') {
+                printf("Single-line comment: //");
+                while ((ch = getchar()) != '\n' && ch != EOF)
+                    putchar(ch);
+                printf("\n");
+            }
+            else if (next == '*') {
+                printf("Multi-line comment: /*");
+                while ((ch = getchar()) != EOF) {
+                    putchar(ch);
+                    if (ch == '*') {
+                        next = getchar();
+                        putchar(next);
+                        if (next == '/')
+                            break;
+                    }
+                }
+                printf("\n");
+            }
+            else {
+            }
+        }
+    }
+    
+    return 0;
+}
+

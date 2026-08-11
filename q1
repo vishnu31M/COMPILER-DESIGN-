@@ -1,0 +1,20 @@
+#include <stdio.h>
+#include <ctype.h>
+int main() {
+    char c;
+    printf("Enter input (Ctrl+D to end):\n");
+    while ((c = getchar()) != EOF) {
+        if (c==' ' || c=='\t' || c=='\n')
+            continue;  
+        if (isalpha(c)) {
+            printf("Identifier: %c\n", c);
+        }
+        else if (isdigit(c)) {
+            printf("Constant: %c\n", c);
+        }
+        else if (c=='+' || c=='-' || c=='*' || c=='/' || c=='=')
+            printf("Operator: %c\n", c);
+    }
+
+    return 0;
+}
