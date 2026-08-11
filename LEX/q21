@@ -1,0 +1,21 @@
+%{
+#include <stdio.h>
+int nchar = 0, nword = 0, nline = 0;
+%}
+
+%%
+\n              { nline++; }
+[ \t]           { /* ignore spaces/tabs */ }
+[a-zA-Z0-9]+    { nword++; nchar += yyleng; }
+.               { nchar++; }
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    yylex();
+    printf("Number of characters = %d\n", nchar);
+    printf("Number of words      = %d\n", nword);
+    printf("Number of lines      = %d\n", nline);
+    return 0;
+}
