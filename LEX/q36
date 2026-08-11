@@ -1,0 +1,31 @@
+%{
+#include <stdio.h>
+double a, b;
+char op;
+%}
+
+%%
+[0-9]+(\.[0-9]+)?[ \t]*[\+\-\*/][ \t]*[0-9]+(\.[0-9]+)? {
+    if (sscanf(yytext, "%lf %c %lf", &a, &op, &b) != 3) {
+        sscanf(yytext, "%lf%c%lf", &a, &op, &b);
+    }
+    switch(op) {
+        case '+': printf("%g\n", a + b); break;
+        case '-': printf("%g\n", a - b); break;
+        case '*': printf("%g\n", a * b); break;
+        case '/': 
+            if (b == 0) printf("Error: Division by zero\n");
+            else printf("%g\n", a / b); 
+            break;
+    }
+}
+.|\n    ;
+%%
+
+int yywrap(){ return 1; }
+
+int main() {
+    printf("Enter expression (e.g. 12+5, 7*8, 10/2): ");
+    yylex();
+    return 0;
+}
