@@ -1,0 +1,22 @@
+%{
+#include <stdio.h>
+#include <string.h>
+int keywords=0, identifiers=0;
+%}
+
+%%
+"int"|"float"|"char"|"while"|"if"|"else"   { keywords++; printf("Keyword : %s\n", yytext); }
+[a-zA-Z_][a-zA-Z0-9_]*                     { identifiers++; printf("Identifier : %s\n", yytext); }
+[ \t\n]+                                   ;   /* ignore spaces/newlines */
+.                                          ;   /* ignore anything else */
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("Enter C code:\n");
+    yylex();
+    printf("\nTotal Keywords = %d\n", keywords);
+    printf("Total Identifiers = %d\n", identifiers);
+    return 0;
+}
