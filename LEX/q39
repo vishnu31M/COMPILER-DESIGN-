@@ -1,0 +1,18 @@
+%{
+    int icount = 0, factcount = 0;
+%}
+
+%%
+fact        { factcount++; }
+i           { icount++; }
+(.|\n)      ;
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    yylex();
+    printf("Count of \"fact\" = %d\n", factcount);
+    printf("Count of letter 'i' = %d\n", icount);
+    return 0;
+}
