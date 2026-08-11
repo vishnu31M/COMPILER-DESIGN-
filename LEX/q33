@@ -1,0 +1,18 @@
+%{
+#include <stdio.h>
+#include <string.h>
+%}
+
+%%
+[a-zA-Z_][a-zA-Z0-9_]*   { printf("%s is a VALID identifier\n", yytext); }
+[0-9][a-zA-Z0-9_]*       { printf("%s is NOT a valid identifier\n", yytext); }
+.|\n                     ;
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("Enter identifiers: ");
+    yylex();
+    return 0;
+}
