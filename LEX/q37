@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+[aeiouAEIOU][a-zA-Z]*   { printf("%s : Accepted (starts with vowel)\n", yytext); }
+[a-zA-Z]+               { printf("%s : Rejected (does not start with vowel)\n", yytext); }
+.|\n                    ;
+%%
+
+int yywrap(){ return 1; }
+
+int main() {
+    printf("Enter words:\n");
+    yylex();
+    return 0;
+}
