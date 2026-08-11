@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+int lineno = 1;
+%}
+
+%%
+\n              { printf("\n%3d ", ++lineno); }
+.               { ECHO; }
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("%3d ", lineno);   // Print first line number
+    yylex();
+    return 0;
+}
