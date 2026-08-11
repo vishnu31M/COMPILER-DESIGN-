@@ -1,0 +1,17 @@
+%{
+#include <stdio.h>
+%}
+
+/* Basic regex for email: username@domain.extension */
+%%
+[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.(com|in|org|net)   { printf("It is a valid email: %s\n", yytext); }
+.+                                              { printf("It is not valid: %s\n", yytext); }
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("Enter the email: ");
+    yylex();    // takes input directly from keyboard
+    return 0;
+}
