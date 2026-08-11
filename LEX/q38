@@ -1,0 +1,21 @@
+%{
+#include <stdio.h>
+int counter = 0;
+%}
+
+%%
+[a-zA-Z]+ {
+    if (yyleng > counter) {
+        counter = yyleng;
+    }
+}
+.|\n ;
+%%
+
+int yywrap(){ return 1; }
+
+int main() {
+    yylex();
+    printf("Largest word length = %d\n", counter);
+    return 0;
+}
