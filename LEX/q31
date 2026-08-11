@@ -1,0 +1,18 @@
+%{
+#include <stdio.h>
+%}
+
+%%
+[0-9]+              { printf("It is an Integer : %s\n", yytext); }
+[0-9]*"."[0-9]+     { printf("It is a Float : %s\n", yytext); }
+[a-zA-Z0-9]+        { printf("It is a String : %s\n", yytext); }
+.|\n                ;
+%%
+
+int yywrap() { return 1; }
+
+int main() {
+    printf("Enter input: ");
+    yylex();
+    return 0;
+}
